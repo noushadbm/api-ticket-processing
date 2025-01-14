@@ -2,13 +2,14 @@ package com.example.demo.service;
 
 import com.example.demo.entity.RequestTemplateEntity;
 import com.example.demo.model.RequestTemplateReq;
-import com.example.demo.model.RequestTemplateResp;
+import com.example.demo.model.RequestTemplateRecord;
 import com.example.demo.repository.RequestTemplateRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Log4j2
@@ -19,8 +20,27 @@ public class RequestService {
         this.requestTemplateRepository = requestTemplateRepository;
     }
 
+    public List<RequestTemplateRecord> listTemplates() {
+        log.info("Fetching request templates");
+        List<RequestTemplateEntity> requestTemplateEntities = requestTemplateRepository.findAll();
+        log.info("Request templates fetched");
+
+        List<RequestTemplateRecord> response = requestTemplateEntities.stream().map(requestTemplateEntity -> {
+            RequestTemplateRecord record = new RequestTemplateRecord();
+            record.setRequestTemplateId(requestTemplateEntity.getRequestTemplateId());
+            record.setRequestType(requestTemplateEntity.getRequestType());
+            record.setCreatedBy(requestTemplateEntity.getCreatedBy());
+            record.setCreationDate(requestTemplateEntity.getCreationDate().toString());
+            record.setTemplateStatus(requestTemplateEntity.getTemplateStatus());
+            record.setEnabled(requestTemplateEntity.getEnabled());
+            return record;
+        }).toList();
+        log.info("Request templates response created");
+        return response;
+    }
+
     @Transactional
-    public RequestTemplateResp saveRequestTemplate(RequestTemplateReq request) {
+    public RequestTemplateRecord saveRequestTemplate(RequestTemplateReq request) {
         log.info("Saving request template");
         RequestTemplateEntity requestTemplateEntity = new RequestTemplateEntity();
         requestTemplateEntity.setRequestType(request.getRequestType());
@@ -31,7 +51,7 @@ public class RequestService {
         RequestTemplateEntity saved = requestTemplateRepository.save(requestTemplateEntity);
         log.info("Request template saved");
 
-        RequestTemplateResp response = new RequestTemplateResp();
+        RequestTemplateRecord response = new RequestTemplateRecord();
         response.setRequestTemplateId(saved.getRequestTemplateId());
         log.info("Request template response created");
         return response;
