@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class RequestTemplateRecord {
-    private Long requestTemplateId;
+    private Long templateId;
     private String requestType;
     private String createdBy;
     private String creationDate;

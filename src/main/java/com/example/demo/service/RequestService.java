@@ -27,7 +27,7 @@ public class RequestService {
 
         List<RequestTemplateRecord> response = requestTemplateEntities.stream().map(requestTemplateEntity -> {
             RequestTemplateRecord record = new RequestTemplateRecord();
-            record.setRequestTemplateId(requestTemplateEntity.getRequestTemplateId());
+            record.setTemplateId(requestTemplateEntity.getRequestTemplateId());
             record.setRequestType(requestTemplateEntity.getRequestType());
             record.setCreatedBy(requestTemplateEntity.getCreatedBy());
             record.setCreationDate(requestTemplateEntity.getCreationDate().toString());
@@ -52,7 +52,7 @@ public class RequestService {
         log.info("Request template saved");
 
         RequestTemplateRecord response = new RequestTemplateRecord();
-        response.setRequestTemplateId(saved.getRequestTemplateId());
+        response.setTemplateId(saved.getRequestTemplateId());
         log.info("Request template response created");
         return response;
     }
