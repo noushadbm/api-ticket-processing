@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @Table(name = "REQUEST_TEMPLATE")
 public class RequestTemplateEntity {
     @Id
-    @GeneratedValue(generator="REQUEST_ID_SEQ")
-    @SequenceGenerator(name="REQUEST_ID_SEQ",sequenceName="REQUEST_ID_SEQ", allocationSize=1)
+    @GeneratedValue(generator="TEMPLATE_ID_SEQ")
+    @SequenceGenerator(name="TEMPLATE_ID_SEQ",sequenceName="TEMPLATE_ID_SEQ", allocationSize=1)
     @Column(name = "REQUEST_TEMPLATE_ID")
     private Long requestTemplateId;
     @Column(name = "REQUEST_TYPE")

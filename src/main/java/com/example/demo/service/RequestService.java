@@ -1,59 +1,47 @@
 package com.example.demo.service;
 
-import com.example.demo.entity.RequestTemplateEntity;
-import com.example.demo.model.RequestTemplateReq;
-import com.example.demo.model.RequestTemplateRecord;
-import com.example.demo.repository.RequestTemplateRepository;
-import jakarta.transaction.Transactional;
+import com.example.demo.entity.ServiceRequestEntity;
+import com.example.demo.model.ServiceRequest;
+import com.example.demo.repository.ServiceRequestRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @Log4j2
 public class RequestService {
-    private RequestTemplateRepository requestTemplateRepository;
+    private ServiceRequestRepository serviceRequestRepository;
 
-    public RequestService(RequestTemplateRepository requestTemplateRepository) {
-        this.requestTemplateRepository = requestTemplateRepository;
+    public RequestService(ServiceRequestRepository serviceRequestRepository) {
+        this.serviceRequestRepository = serviceRequestRepository;
+    }
+    public List<ServiceRequest> getAllRequests() {
+        log.info("Fetching service requests");
+        List<ServiceRequestEntity> serviceRequestEntities = serviceRequestRepository.findAll();
+        List<ServiceRequest> serviceRequests = serviceRequestEntities.stream().map(entity -> toModel(entity)).toList();
+        log.info("Service requests fetched");
+        return serviceRequests;
     }
 
-    public List<RequestTemplateRecord> listTemplates() {
-        log.info("Fetching request templates");
-        List<RequestTemplateEntity> requestTemplateEntities = requestTemplateRepository.findAll();
-        log.info("Request templates fetched");
-
-        List<RequestTemplateRecord> response = requestTemplateEntities.stream().map(requestTemplateEntity -> {
-            RequestTemplateRecord record = new RequestTemplateRecord();
-            record.setTemplateId(requestTemplateEntity.getRequestTemplateId());
-            record.setRequestType(requestTemplateEntity.getRequestType());
-            record.setCreatedBy(requestTemplateEntity.getCreatedBy());
-            record.setCreationDate(requestTemplateEntity.getCreationDate().toString());
-            record.setTemplateStatus(requestTemplateEntity.getTemplateStatus());
-            record.setEnabled(requestTemplateEntity.getEnabled());
-            return record;
-        }).toList();
-        log.info("Request templates response created");
-        return response;
+    public ServiceRequest createServiceRequest(ServiceRequest request) {
+        ServiceRequestEntity entity = toEntity(request);
+        log.info("Creating service request");
+        ServiceRequestEntity newEntity = serviceRequestRepository.save(entity);
+        log.info("Service request created");
+        return toModel(newEntity);
     }
 
-    @Transactional
-    public RequestTemplateRecord saveRequestTemplate(RequestTemplateReq request) {
-        log.info("Saving request template");
-        RequestTemplateEntity requestTemplateEntity = new RequestTemplateEntity();
-        requestTemplateEntity.setRequestType(request.getRequestType());
-        requestTemplateEntity.setCreatedBy(request.getCreatedBy());
-        requestTemplateEntity.setTemplateStatus(request.getTemplateStatus());
-        requestTemplateEntity.setCreationDate(LocalDateTime.now());
-        requestTemplateEntity.setEnabled(true);
-        RequestTemplateEntity saved = requestTemplateRepository.save(requestTemplateEntity);
-        log.info("Request template saved");
+    private ServiceRequestEntity toEntity(ServiceRequest request) {
+        ServiceRequestEntity entity = new ServiceRequestEntity();
+        entity.setRequestType(request.getRequestType());
+        return entity;
+    }
 
-        RequestTemplateRecord response = new RequestTemplateRecord();
-        response.setTemplateId(saved.getRequestTemplateId());
-        log.info("Request template response created");
-        return response;
+    private ServiceRequest toModel(ServiceRequestEntity entity) {
+        ServiceRequest request = new ServiceRequest();
+        request.setRequestId(entity.getRequestId());
+        request.setRequestType(entity.getRequestType());
+        return request;
     }
 }
